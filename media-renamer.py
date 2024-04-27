@@ -108,7 +108,15 @@ def run_exiftool(directory: Path) -> int:
         print("exiftool not found.", file=sys.stderr)
         return 1
     rc = subprocess.call(
-        [exiftool_path, "-filename<DateTimeOriginal", "-d", "%Y-%m-%d_%H-%M-%S.%%e", "-r", directory.name, "."]
+        [
+            exiftool_path,
+            "-filename<DateTimeOriginal",
+            "-d",
+            "%Y-%m-%d_%H-%M-%S.%%e",
+            "-r",
+            directory.name,
+            ".",
+        ]
     )
     if rc != 0:
         print("exiftool failed.", file=sys.stderr)
@@ -116,7 +124,7 @@ def run_exiftool(directory: Path) -> int:
     return 0
 
 
-def main() -> int:
+def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Rename files in a directory.")
     parser.add_argument(
         "directory", type=str, help="Path to the directory containing files to rename"
@@ -130,11 +138,12 @@ def main() -> int:
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Print verbose output"
     )
-    # add args to run exitool
-    parser.add_argument(
-        "-e", "--exiftool", action="store_true", help="Run exiftool"
-    )
-    args = parser.parse_args()
+    parser.add_argument("-e", "--exiftool", action="store_true", help="Run exiftool")
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
 
     if args.exiftool:
         run_exiftool(Path(args.directory))
@@ -149,4 +158,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
- 
